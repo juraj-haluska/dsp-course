@@ -8,9 +8,10 @@ if o >= n
     error('o have to be less than n!');
 end
 
-m=([]);
+columns = floor((length(v) - o) / (n - o));
+m = zeros(n, columns);
 
-for col=1:floor((length(v) - o) / (n - o))
+for col=1:columns
     begin = (col - 1) * (n - o); 
     for i=1:n
         m(i, col) = v(begin + i);
