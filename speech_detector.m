@@ -1,61 +1,66 @@
-[y, Fs] = audioread('records/kostol.wav');
+% this script finds speech in audio based on energy of signal
+% and count of zero crossings
 
-m = split(y, floor(Fs * 0.03), 0);
-e = sum(m.*m)/2;    % energy of signal
+[y, Fs] = audioread('records/slovo.wav');
+
+% constants
+overlap = 30;
+frameSize = floor(Fs * 0.03);
+zerosTh = 0.9;
+energyTh = 0.01;
+
+% split signal into frames with overlap
+m = split(y, frameSize, overlap);
+m = m .* hamming(length(m));
+
+% energy and number of zero-crossings for each frame
+e = sum(m .* m) / 2;
 z = zero_crossing(m);
 
-% filter zero crossing
-slope_th_zeros = 180;
-zd = diff(z);
-zf = zeros(1, length(z));
-for i=1:length(zd)
-    if (abs(zd(i)) > slope_th_zeros)
-        zf(i) = 150;    % only for visibility in plots
-    end
-end
-% filter energy
-slope_th_energy = 0.3;
-ed = diff(e);
-ef = zeros(1, length(e));
-for i=1:length(zd)
-    if (abs(ed(i)) > slope_th_energy)
-        ef(i) = 5;      % only for visibility in plots
-    end
+% normalize zeros and energy to range between 0 - 1
+maxEnergy = max(e);
+maxZeros = max(z);
+e = e ./ maxEnergy;
+z = z./ maxZeros;
+
+% filter zeros and energy based on tresholds
+for i=1:size(m, 2)
+   if z(i) >= zerosTh
+       z(i) = 1;
+   else 
+       z(i) = 0;
+   end
+   if e(i) >= energyTh
+       e(i) = 1;
+   else
+       e(i) = 0;
+   end
 end
 
-valid = zf + ef;
-% normalize valid (only for plotting purposes)
-for i=1:length(valid)
-    if (valid(i) ~= 0) 
-        valid(i) = 1;
-    end
-end
-
-% compute valid blocks
+% find valid region in signal
+ez = e + z;
 first = 0;
 last = 0;
-for i=1:length(valid)
-    if (valid(i) ~= 0 && first == 0)
-        first = i;
+for i=1:length(ez)
+    if (first == 0)
+       if (ez(i) >= 1)
+           first = i;
+       end
     end
-    if (valid(length(valid) - i + 1) ~= 0 && last == 0)
-        last = length(valid) - i + 1;
+    if (last == 0)
+       if (ez(length(ez) - i + 1) >= 1)
+           last = length(ez) - i + 1;
+       end
     end
 end
 
-% trim signal
+% validate signal (for plot only)
+firstSample = frameSize * first - (first - 1) * overlap;
+lastSample = frameSize * last - (last - 1) * overlap;
+valid = y(firstSample:lastSample);
 
+audiowrite('output.wav',valid,Fs);
 
-plot(y);
-figure;
-plot(y(first * Fs * 0.03:last * Fs * 0.03));
-%figure;
-%plot(e);
-%hold on;
-%plot(ef, "r");
-%figure;
-%plot(z);
-%hold on;
-%plot(zf, "r");
-%figure;
-%plot(valid);
+% plot(y);
+% figure;
+% plot(valid);
