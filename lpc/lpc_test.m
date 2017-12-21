@@ -1,27 +1,26 @@
-clear all;
-[x, Fs] = wavread('C:\Users\KTK\Desktop\M04\lieh_M4.wav');
+close all;
+[y, Fs] = audioread('records/zosit.wav');
 
-sub = x(16030:(16030 + Fs*0.05));
-sub = sub.*hamming(length(sub));
+% subsignal
+sub = y(2000:3000);
+sub = sub .* hamming(length(sub))';
 
-a = lpc(sub, 10);
+% fft of subsignal
+spectrum = fft(sub);
+freq = (2*pi/length(spectrum):2*pi/length(spectrum):2*pi);
+yyaxis left
+plot(freq, abs(spectrum));
 
-freq = abs(fft(sub));
-
-out = ([]);
-samples = length(freq);
-for i=1:samples
-   out(i) = h(2*pi*(i-1)/samples, a(2:end));
-end
-
-plot(abs(out));
+% frequency response of lpc
+a = lpc(sub, 20);
+[h,w] = freqz(1, a, 512 , 'whole');
 hold on;
-plot(freq);
-figure;
+yyaxis right
+plot(w, abs(h));
 
-signal = filter(a, 1, sub);
-synth = out * signal;
-
-plot(signal);
+% frequency response of mylpc
+mya = mylpc(sub, 20);
+[h,w] = freqz(1, mya, 512 , 'whole');
 hold on;
-plot(synth);
+yyaxis right
+plot(w, abs(h), 'g');
