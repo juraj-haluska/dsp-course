@@ -1,4 +1,4 @@
-function [d] = dtw1(A, B)
+function [d] = dtw(A, B)
 
 % dimension of vectors in [A] and [B] (must be the same)
 dim = size(A ,1);
@@ -24,31 +24,9 @@ for a = 1:length(A)
         if a == 1 && b == 1
             globalDist(b, a) = localDist(b, a);
         else
-            % first row represents validity of condition
-            % second row represents actual value
-            valids = [];
-
-            % condition 1
-            i = b;
-            j = a - 1;
-            if i > 0 && j > 0
-                valids = [valids globalDist(i, j) + localDist(b, a)];
-            end
             
-            % condition 2
-            i = b - 1;
-            j = a - 1;
-            if i > 0 && j > 0
-                valids = [valids globalDist(i, j) + 2 * localDist(b, a)];
-            end
-            
-            % condition 3
-            i = b - 1;
-            j = a;
-            if i > 0 && j > 0
-                valids = [valids globalDist(i, j) + localDist(b, a)];
-            end
-            
+            valids = type3(a, b, globalDist, localDist);
+    
             % find and save minimum value to globalDist
             globalDist(b, a) = min(valids);
         end
