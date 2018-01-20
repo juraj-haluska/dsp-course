@@ -1,4 +1,4 @@
-function [d] = dtw(A, B)
+function [d] = dtw(A, B, type)
 
 % dimension of vectors in [A] and [B] (must be the same)
 dim = size(A ,1);
@@ -24,9 +24,12 @@ for a = 1:length(A)
         if a == 1 && b == 1
             globalDist(b, a) = localDist(b, a);
         else
-            
-            valids = type3(a, b, globalDist, localDist);
-    
+            if type == 3
+                valids = type3(a, b, globalDist, localDist);
+            else
+                valids = type1(a, b, globalDist, localDist);
+            end 
+                  
             % find and save minimum value to globalDist
             globalDist(b, a) = min(valids);
         end
