@@ -18,21 +18,37 @@ for a = 1:length(A)
 end
 
 % compute global distances based on local conditions
-globalDist = zeros(length(B), length(A));
-for a = 1:length(A)
-    for b = 1:length(B)
-        if a == 1 && b == 1
-            globalDist(b, a) = localDist(b, a);
-        else
-            if type == 3
-                valids = type3(a, b, globalDist, localDist);
-            else
-                valids = type1(a, b, globalDist, localDist);
-            end 
-                  
-            % find and save minimum value to globalDist
-            globalDist(b, a) = min(valids);
-        end
+globalDist = -ones(length(B), length(A));
+
+% first point
+globalDist(1, 1) = localDist(1, 1);            
+
+% moving diagonally
+for i = 2:length(B) + length(A) - 1
+    if i <= length(A)
+        aStart = i;
+        bStart = 1;
+    else
+        aStart = length(A);
+        bStart = bStart + 1;
+    end
+    a = aStart;
+    b = bStart;
+    while a >= 1 && b <= length(B)
+       if type == 6
+           valids = type6(a, b, globalDist, localDist);
+       elseif type == 3
+           valids = type3(a, b, globalDist, localDist);
+       else
+           valids = type1(a, b, globalDist, localDist);
+       end
+       % find and save minimum value to globalDist
+       if ~isempty(valids)
+           globalDist(b, a) = min(valids);
+       end
+       
+       a = a - 1;
+       b = b + 1;
     end
 end
 
