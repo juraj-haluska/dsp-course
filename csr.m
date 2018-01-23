@@ -3,7 +3,7 @@
 % initial parameters
 overlapMs = 10;
 frameSizeMs = 30;
-lpcCount = 10;
+lpcCount = 50;
 
 % 1. create dictionary
 records = dir('records/*.wav');
@@ -16,7 +16,7 @@ for i=1:length(records)
     
     % apply pre-emphasis
     y = filter([1 -0.9], 1, y);
-    
+
     % split signal into frames with overlap and apply window
     m = split(y, frameSize, overlap);
     m = m .* hamming(length(m));
@@ -56,5 +56,5 @@ distances = ([]);
 for i = 1:length(records)
     distances(i) = dtw(records(i).lpcs, lpcs, 1);
 end
-[m, i] = min(distances);
+[v, i] = min(distances);
 records(i).name
