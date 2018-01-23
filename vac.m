@@ -1,21 +1,14 @@
+function [first, last] = vac(m)
 % Voice Activity Detection
 % this script tries to find speech in audio file
 % analysing energy of the signal and count of zero crossings
 
-[y, Fs] = audioread('records/dve_slova.wav');
-
 % constants
-overlap = 30;
-frameSize = floor(Fs * 0.03);
 energyTh = 0.01;
 diffTh = 0.05;
 durationTh = 8;
 before = 3;
 after = 0;
-
-% split signal into frames with overlap
-m = split(y, frameSize, overlap);
-m = m .* hamming(length(m));
 
 % energy and number of zero-crossings for each frame
 e = sum(m .* m) / 2;
@@ -40,7 +33,7 @@ end
 zz = zeros(1, length(z));
 value = 0;
 for i=2:length(z)
-    delta = z(i) - z(i - 1)
+    delta = z(i) - z(i - 1);
     if delta <= -diffTh
         value = 1;
     end
@@ -91,10 +84,3 @@ end
 if last + after <= size(m, 2)
     last = last + after;
 end
-
-% validate signal
-firstSample = frameSize * first - (first - 1) * overlap;
-lastSample = frameSize * last - (last - 1) * overlap;
-valid = y(firstSample:lastSample);
-
-audiowrite('output.wav',valid,Fs);
