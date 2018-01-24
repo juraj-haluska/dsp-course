@@ -7,7 +7,7 @@ overlapMs = 10;
 frameSizeMs = 30;
 bandsCount = 40;
 mfccCount = 20;
-dictDir = 'records/numbers/';
+dictDir = 'records/';
 
 % 1. create dictionary
 records = dir(strcat(dictDir,'*.wav'));

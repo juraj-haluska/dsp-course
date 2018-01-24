@@ -6,12 +6,13 @@ close all;
 overlapMs = 10;
 frameSizeMs = 30;
 lpcCount = 30;
+dictDir = 'records/';
 
 % 1. create dictionary
-records = dir('records/numbers/*.wav');
+records = dir(strcat(dictDir,'*.wav'));
 for i=1:length(records)
     % load wave file
-    [y, Fs] = audioread(strcat('records/numbers/', records(i).name));
+    [y, Fs] = audioread(strcat(dictDir, records(i).name));
     
     overlap = floor(Fs * overlapMs / 1000);
     frameSize = floor(Fs * frameSizeMs / 1000);
