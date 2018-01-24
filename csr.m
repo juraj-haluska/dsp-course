@@ -1,15 +1,17 @@
 % computer speech recognition using LPC + DTW
+clear all;
+close all;
 
 % initial parameters
 overlapMs = 10;
 frameSizeMs = 30;
-lpcCount = 50;
+lpcCount = 30;
 
 % 1. create dictionary
-records = dir('records/*.wav');
+records = dir('records/numbers/*.wav');
 for i=1:length(records)
     % load wave file
-    [y, Fs] = audioread(strcat('records/', records(i).name));
+    [y, Fs] = audioread(strcat('records/numbers/', records(i).name));
     
     overlap = floor(Fs * overlapMs / 1000);
     frameSize = floor(Fs * frameSizeMs / 1000);
@@ -23,7 +25,8 @@ for i=1:length(records)
     
     % filter out silence (first and last are indexes of valid blocks)
     [first, last] = vad(m);
-    valid = m(:, first:last);
+    % valid = m(:, first:last);
+    valid = m;
     
     % calculate lpc coefficients for each block
     lpcs = zeros(lpcCount, size(valid, 2));
@@ -44,7 +47,8 @@ y = filter([1 -0.9], 1, y);
 m = split(y, frameSize, overlap);
 m = m .* hamming(length(m));
 [first, last] = vad(m);
-valid = m(:, first:last);
+% valid = m(:, first:last);
+valid = m;
 lpcs = zeros(lpcCount, size(valid, 2));
 for b=1:size(valid, 2)
     lpcout = mylpc(valid(:, b), lpcCount);

@@ -1,16 +1,19 @@
 % computer speech recognition using MFCC + DTW
+clear all;
+close all;
 
 % initial parameters
-overlapMs = 12;
-frameSizeMs = 40;
+overlapMs = 10;
+frameSizeMs = 30;
 bandsCount = 40;
 mfccCount = 20;
+dictDir = 'records/numbers/';
 
 % 1. create dictionary
-records = dir('records/numbers/*.wav');
+records = dir(strcat(dictDir,'*.wav'));
 for i=1:length(records)
     % load wave file
-    [y, Fs] = audioread(strcat('records/numbers/', records(i).name));
+    [y, Fs] = audioread(strcat(dictDir, records(i).name));
     
     overlap = floor(Fs * overlapMs / 1000);
     frameSize = floor(Fs * frameSizeMs / 1000);
@@ -24,7 +27,8 @@ for i=1:length(records)
     
     % filter out silence (first and last are indexes of valid blocks)
     [first, last] = vad(m);
-    valid = m(:, first:last);
+    % valid = m(:, first:last);
+    valid = m;
     
     % calculate mfcc coefficients for each block
     mfccs = zeros(mfccCount, size(valid, 2));
@@ -45,7 +49,9 @@ y = filter([1 -0.9], 1, y);
 m = split(y, frameSize, overlap);
 m = m .* hamming(length(m));
 [first, last] = vad(m);
-valid = m(:, first:last);
+%valid = m(:, first:last);
+valid = m;
+
 mfccs = zeros(mfccCount, size(valid, 2));
 for b=1:size(valid, 2)
     mfccout = mfcc(valid(:, b)', bandsCount, mfccCount);

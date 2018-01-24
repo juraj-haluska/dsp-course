@@ -3,8 +3,8 @@ function [A] = mel_fb(len, bands)
     % for left half of fft
 
     % hz <-> mels
-    toMels = @(f) 2595 * log10(1 + f/700);
-    toHz = @(m) 700 * (10.^(m/2595) - 1);
+    toMels = @(f) 2595 .* log10(1 + f./700);
+    toHz = @(m) 700 .* (10.^(m./2595) - 1);
     
     bandLength = floor(len / bands);
     lastMel = toMels(len);

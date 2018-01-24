@@ -11,6 +11,5 @@ function [mfcc] = mfcc(signal, bandsCount, dctsCount)
     
     % perform discrete cosine transform
     dcts = dct(filtered);
-
     mfcc = dcts(1:dctsCount);
 end
