@@ -1,4 +1,4 @@
-[y, Fs] = audioread('records/s.wav');
+[y, Fs] = audioread('test.wav');
 
 % constants
 overlap = floor(Fs * 0.01);
