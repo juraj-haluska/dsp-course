@@ -1,4 +1,4 @@
-function [first, last] = vac(m)
+function [first, last] = vad(m)
 % Voice Activity Detection
 % this script tries to find speech in audio file
 % analysing energy of the signal and count of zero crossings
@@ -7,7 +7,7 @@ function [first, last] = vac(m)
 energyTh = 0.01;
 diffTh = 0.05;
 durationTh = 8;
-before = 3;
+before = 0;
 after = 0;
 
 % energy and number of zero-crossings for each frame

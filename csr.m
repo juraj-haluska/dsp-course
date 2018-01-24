@@ -22,7 +22,7 @@ for i=1:length(records)
     m = m .* hamming(length(m));
     
     % filter out silence (first and last are indexes of valid blocks)
-    [first, last] = vac(m);
+    [first, last] = vad(m);
     valid = m(:, first:last);
     
     % calculate lpc coefficients for each block
@@ -43,7 +43,7 @@ frameSize = floor(Fs * frameSizeMs / 1000);
 y = filter([1 -0.9], 1, y);
 m = split(y, frameSize, overlap);
 m = m .* hamming(length(m));
-[first, last] = vac(m);
+[first, last] = vad(m);
 valid = m(:, first:last);
 lpcs = zeros(lpcCount, size(valid, 2));
 for b=1:size(valid, 2)
