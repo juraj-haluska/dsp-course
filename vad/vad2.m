@@ -3,7 +3,7 @@ function [out] = vad2(m, Fs)
 
 % constants
 zerosPeakTh = 0.3;
-zerosPeakDiffTh = 0.05;
+zerosPeakDiffTh = 0.15;
 energyMagTh = 0.01;
 durationMs = 350;
 
@@ -54,11 +54,11 @@ for i=1:length(zerosPeaks)
         index = index - 1;
     end
     % right side to the current peak
-    index = zerosPeaks(i);
-    while index <= length(filtered) && (peakValue - filtered(index)) <= zerosPeakDiffTh
-        validZeros(index) = 1;
-        index = index + 1;
-    end
+    % index = zerosPeaks(i);
+    % while index <= length(filtered) && (peakValue - filtered(index)) <= zerosPeakDiffTh
+    %     validZeros(index) = 1;
+    %     index = index + 1;
+    % end
 end
 plot(filtered); hold on; plot(validZeros, 'r');
 
@@ -79,9 +79,12 @@ figure; plot(validRegions);
 % filter valid regions by duration filter 
 frameMs = Fs / size(m ,1);
 offset = ceil(durationMs / frameMs);
-for i=2:length(validRegions)
+for i=2:length(validRegions) - offset
     if validRegions(i - 1) > 0 && validRegions(i + offset) > 0
-        validRegions(i) = 1;
+        start = i;
+        for i=start:start + offset
+            validRegions(i) = 1;
+        end
     end
 end
 
