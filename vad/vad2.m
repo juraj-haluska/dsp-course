@@ -60,7 +60,7 @@ for i=1:length(zerosPeaks)
     %     index = index + 1;
     % end
 end
-plot(filtered); hold on; plot(validZeros, 'r');
+% plot(filtered); hold on; plot(validZeros, 'r');
 
 % filter energy according to treshold - energyMagTh
 for i=1:length(e)
@@ -74,7 +74,7 @@ end
 % combine valid regions from energy and zeros
 validRegions = e + validZeros;
 
-figure; plot(validRegions);
+% figure; plot(validRegions);
 
 % filter valid regions by duration filter 
 frameMs = Fs / size(m ,1);
@@ -88,10 +88,14 @@ for i=2:length(validRegions) - offset
     end
 end
 
-figure; plot(validRegions);
+% figure; plot(validRegions);
 
 % create output matrix
 count = 0;
+if validRegions(1) > 0
+    count = count + 1;
+    out(1, count) = 1;
+end
 for i=2:length(validRegions)
     % transition from invalid to valid
     if validRegions(i - 1) == 0 && validRegions(i) > 0
@@ -100,8 +104,11 @@ for i=2:length(validRegions)
     end
     % transition from valid to invalid
     if validRegions(i - 1) > 0 && validRegions(i) == 0
-       out(2, count) = i; 
+        out(2, count) = i; 
     end
+end
+if validRegions(i) > 0
+    out(2, count) = i;
 end
 
 end

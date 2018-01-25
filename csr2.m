@@ -23,12 +23,11 @@ for i=1:length(records)
 
     % split signal into frames with overlap and apply window
     m = split(y, frameSize, overlap);
-    m = m .* hamming(length(m));
+    m = m .* hamming(frameSize);
     
     % filter out silence (first and last are indexes of valid blocks)
-    [first, last] = vad(m);
-    % valid = m(:, first:last);
-    valid = m;
+    out = vad2(m, Fs);
+    valid = m(:, out(1,1):out(2,1));
     
     % calculate mfcc coefficients for each block
     mfccs = zeros(mfccCount, size(valid, 2));
@@ -47,10 +46,9 @@ overlap = floor(Fs * overlapMs / 1000);
 frameSize = floor(Fs * frameSizeMs / 1000);
 y = filter([1 -0.9], 1, y);
 m = split(y, frameSize, overlap);
-m = m .* hamming(length(m));
-[first, last] = vad(m);
-%valid = m(:, first:last);
-valid = m;
+m = m .* hamming(frameSize);
+blocks = vad2(m, Fs);
+valid = m(:, blocks(1,1):blocks(2,1));
 
 mfccs = zeros(mfccCount, size(valid, 2));
 for b=1:size(valid, 2)

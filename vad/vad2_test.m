@@ -7,7 +7,7 @@ overlap = floor(Fs * 0.01);
 frameSize = floor(Fs * 0.03);
 
 % pre-emphasis
-y = filter([1 -0.9], 1, y);
+% y = filter([1 -0.9], 1, y);
 
 % split signal into frames with overlap
 m = split(y, frameSize, overlap);
