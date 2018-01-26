@@ -9,6 +9,7 @@ frameSizeMs = 30;
 pocetPasiem = 40;
 pocetMfcc = 20;
 dictDir = './';
+% 6tka dtwTreshold = 4;
 dtwTreshold = 50;
 
 overlap = floor(Fs * overlapMs / 1000);
@@ -68,7 +69,7 @@ for i = 1:length(slovnik)
 end
 
 for s=1:length(vzdialenosti)
-   if vzdialenosti(s) <= dtwTreshold && vzdialenosti(s) >= 0
+   if vzdialenosti(s) < dtwTreshold && vzdialenosti(s) >= 0
        disp('najdene slovo sedem')
        disp(strcat('    zaciatocny blok:', num2str(out(1, s))));
        disp(strcat('    konecny blok:', num2str(out(2, s))));
