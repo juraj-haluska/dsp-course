@@ -3,9 +3,9 @@ function [out] = vad2(m, Fs)
 
 % constants
 zerosPeakTh = 0.3;
-zerosPeakDiffTh = 0.15;
-energyMagTh = 0.01;
-durationMs = 350;
+zerosPeakDiffTh = 0.3;
+energyMagTh = 0.001;
+durationMs = 250;
 
 % energy and number of zero-crossings for each frame
 e = sum(m .* m) / 2;
