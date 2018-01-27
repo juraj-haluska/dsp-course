@@ -1,15 +1,11 @@
-clear all;
-close all;
-
+% exam
 [y, Fs] = audioread('zadanie.wav');
 
 % parametre
 overlapMs = 10;
 frameSizeMs = 30;
-pocetPasiem = 40;
-pocetMfcc = 20;
-dictDir = './';
-% 6tka dtwTreshold = 4;
+pocetLpc = 20;
+% dtw 1 a 2 = 50, 6 = 4
 dtwTreshold = 50;
 
 overlap = floor(Fs * overlapMs / 1000);
@@ -35,14 +31,14 @@ for i=1:length(out)
     slovo = m(:, out(1, i):out(2, i));
     
     % vyrataj MFCC pre kazdy blok
-    mfccs = zeros(pocetMfcc, size(slovo, 2));
+    lpcs = zeros(pocetLpc, size(slovo, 2));
     for b=1:size(slovo, 2)
-        mfccout = mfcc(slovo(:, b)', pocetPasiem, pocetMfcc);
-        mfccs(:, b) = mfccout';
+        lpcout = mylpc(slovo(:, b)', pocetLpc);
+        lpcs(:, b) = lpcout(2:end)';
     end
     
     % uloz do slovnika
-    slovnik(i).mfccs = mfccs;
+    slovnik(i).lpcs = lpcs;
 end
 
 % nacitaj porovnavane slovo
@@ -56,21 +52,21 @@ jednoSlovo = split(y, frameSize, overlap);
 jednoSlovo = jednoSlovo .* hamming(frameSize);
 
 % MFCC koeficienty
-mfccs = zeros(pocetMfcc, size(jednoSlovo, 2));
+lpcs = zeros(pocetLpc, size(jednoSlovo, 2));
 for b=1:size(jednoSlovo, 2)
-    mfccout = mfcc(jednoSlovo(:, b)', pocetPasiem, pocetMfcc);
-    mfccs(:, b) = mfccout';
+    lpcout = mylpc(slovo(:, b)', pocetLpc);
+    lpcs(:, b) = lpcout(2:end)';
 end
 
 % porovnaj pomocou DTW
 vzdialenosti = ([]);
 for i = 1:length(slovnik)
-    vzdialenosti(i) = dtw(slovnik(i).mfccs, mfccs, 1);
+    vzdialenosti(i) = dtw(slovnik(i).lpcs, lpcs, 3);
 end
 
 for s=1:length(vzdialenosti)
    if vzdialenosti(s) < dtwTreshold && vzdialenosti(s) >= 0
-       disp('najdene slovo sedem')
+       disp('najdene slovo')
        disp(strcat('    zaciatocny blok:', num2str(out(1, s))));
        disp(strcat('    konecny blok:', num2str(out(2, s))));
    end
